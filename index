@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔥 온도·열평형 및 열 전달 마스터 퀴즈 ❄️</title>
+    <style>
+        :root {
+            --primary: #4a90e2;
+            --success: #2a9d8f;
+            --danger: #e63946;
+            --warning: #ffbe0b;
+            --dark: #2f3e46;
+            --light: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: #eef2f7;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 40px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        header {
+            text-align: center;
+            border-bottom: 4px solid var(--primary);
+            padding-bottom: 25px;
+            margin-bottom: 35px;
+        }
+
+        header h1 {
+            color: var(--primary);
+            margin: 0;
+            font-size: 2.3rem;
+            word-break: keep-all;
+        }
+
+        header p {
+            color: #6c757d;
+            margin-top: 10px;
+            font-size: 1.1rem;
+        }
+
+        .level-header {
+            background: var(--dark);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-top: 40px;
+            font-size: 1.3rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .level-mid { background: #3a86ff; }
+        .level-hard { background: #8338ec; }
+
+        .quiz-card {
+            background: var(--light);
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 20px;
+            border-left: 6px solid #ced4da;
+            transition: all 0.3s;
+        }
+        
+        .quiz-card.solved-correct {
+            border-left-color: var(--success);
+            background: #e8f5e9;
+        }
+
+        .quiz-card h3 {
+            margin-top: 0;
+            font-size: 1.15rem;
+            color: #111;
+            word-break: keep-all;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            border-radius: 4px;
+            color: white;
+            margin-bottom: 10px;
+        }
+        .badge-mid { background-color: #00b4d8; }
+        .badge-hard { background-color: #ff0054; }
+
+        .options-container {
+            margin-top: 15px;
+            display: grid;
+            gap: 10px;
+        }
+
+        .option-label {
+            background: white;
+            padding: 14px 20px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .option-label:hover {
+            background: #f1f7fe;
+            border-color: var(--primary);
+        }
+
+        .option-label input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        /* 팝업창 스타일 */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background: white;
+            padding: 35px;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .modal-title {
+            font-size: 1.6rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .modal-body {
+            font-size: 1.05rem;
+            color: #4a5568;
+            margin-bottom: 25px;
+            line-height: 1.5;
+            word-break: keep-all;
+        }
+
+        .modal-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: background 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn-success { background-color: var(--success); }
+        .btn-success:hover { background-color: #238577; }
+        .btn-danger { background-color: var(--danger); }
+        .btn-danger:hover { background-color: #c92a36; }
+
+        .score-box {
+            text-align: center;
+            margin-top: 40px;
+            padding: 25px;
+            background: var(--dark);
+            color: white;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>🔥 온도·열평형 및 열 전달 마스터 퀴즈 ❄️</h1>
+        <p>교과서 속 핵심 개념을 입체적 퀴즈를 통해 완벽히 이해해 봅시다!</p>
+    </header>
+
+    <div class="level-header level-mid">⭐ 중간 수준 문제 (7문항)</div>
+    <div id="midQuizContainer"></div>
+
+    <div class="level-header level-hard">🚀 심화 수준 문제 (5문항)</div>
+    <div id="hardQuizContainer"></div>
+
+    <div class="score-box">
+        <h2>📊 실시간 학습 진행률</h2>
+        <p style="font-size: 1.3rem;">정답을 맞춘 문제: <strong id="solvedCount" style="color: var(--warning);">0</strong> / 12 문항</p>
+    </div>
+</div>
+
+<div class="modal-overlay" id="feedbackModal">
+    <div class="modal-content" id="modalContent">
+        <div class="modal-icon" id="modalIcon">🎉</div>
+        <div class="modal-title" id="modalTitle">정답입니다!</div>
+        <div class="modal-body" id="modalBody">해설이 들어가는 자리입니다.</div>
+        <button class="modal-btn" id="modalBtn" onclick="closeModal()">다음 단계로</button>
+    </div>
+</div>
+
+<script>
+    // 퀴즈 데이터셋
+    const quizData = [
+        {
+            level: "mid",
+            q: "1. 물체를 구성하는 '입자의 운동'과 '온도'의 관계에 대한 설명으로 옳은 것은?",
+            a: ["온도가 높을수록 입자의 운동이 둔해진다.", "입자의 운동이 활발할수록 물체의 온도가 높다.", "찬물 속의 입자들은 운동을 완전히 멈춘 상태이다.", "온도는 입자의 크기를 나타내는 물리량이다."],
+            c: 1,
+            e: "온도는 물체를 구성하는 입자들의 운동이 활발한 정도를 나타내는 숫자로, 온도가 높을수록 입자의 운동이 활발해집니다."
+        },
+        {
+            level: "mid",
+            q: "2. 찬물에 컵라면 스프나 잉크를 넣었을 때보다 뜨거운 물에 넣었을 때 더 빠르게 잘 퍼지는 과학적 이유는?",
+            a: ["뜨거운 물 속 입자들의 크기가 더 작아지기 때문에", "뜨거운 물 속 입자들의 운동이 더 활발하기 때문에", "뜨거운 물이 찬물보다 밀도가 훨씬 크기 때문에", "찬물에는 물질을 녹이는 성분이 없기 때문에"],
+            c: 1,
+            e: "뜨거운 물은 찬물보다 입자 운동이 활발하므로, 물에 들어간 잉크나 스프 입자와 더 자주 충돌하여 빠르게 퍼지게(확산) 만듭니다."
+        },
+        {
+            level: "mid",
+            q: "3. 고체 막대의 한쪽 끝을 가열하면 열이 고체 물질을 구성하는 입자들의 연쇄적인 진동 충돌을 통해 이웃한 입자로 전달되는 현상은?",
+            a: ["전도", "대류", "복사", "비열"],
+            c: 0,
+            e: "입자가 직접 자리를 이동하지 않고, 제자리에서 진동하여 옆 입자에게 열을 차례대로 넘겨주는 고체에서의 열 전달 방식을 '전도'라고 합니다."
+        },
+        {
+            level: "mid",
+            q: "4. 방 안에 난방기를 켤 때, 따뜻해진 공기가 위로 올라가고 위에 있던 찬 공기가 아래로 내려오며 방 전체가 순환되어 데워지는 열 전달 방식은?",
+            a: ["전도", "대류", "복사", "단열"],
+            c: 1,
+            e: "액체나 기체 상태의 입자가 열을 얻어 직접 위아래로 이동하면서 열을 이동시키는 방식을 '대류'라고 합니다."
+        },
+        {
+            level: "mid",
+            q: "5. 난로나 태양의 열 에너지가 중간에 물질을 거치지 않고 빛이나 전자기파의 형태로 직접 이동하는 열 전달 방식의 명칭은?",
+            a: ["전도", "대류", "복사", "전반사"],
+            c: 2,
+            e: "매개 물질의 도움 없이 열이 직접 사방으로 방출되어 이동하는 현상을 '복사'라고 합니다."
+        },
+        {
+            level: "mid",
+            q: "6. 물체에서 나오는 복사열(적외선)을 감지하여 눈에 보이는 영상으로 바꾸어 주며, 모든 물체에서 스스로 방출되는 열을 촬영하는 장비는?",
+            a: ["현미경", "열화상 카메라", "자외선 살균기", "초음파 측정기"],
+            c: 1,
+            e: "열화상 카메라는 물체의 온도에 따라 스스로 방출하는 적외선 형태의 복사열을 감지하여 시각화합니다."
+        },
+        {
+            level: "mid",
+            q: "7. 다음 일상 현상 중 열 전달 방식이 '복사'에 해당하는 현상만을 고른 것은?",
+            a: ["뜨거운 국에 담가 둔 숟가락 손잡이가 뜨거워진다.", "주전자의 밑바닥을 가열하면 물 전체가 데워진다.", "그늘에 있다가 햇볕 아래로 나오면 온몸이 따뜻해진다.", "철제 의자에 앉으면 나무 의자보다 차갑게 느껴진다."],
+            c: 2,
+            e: "햇빛의 열 에너지가 진공 우주 공간을 뚫고 직접 도달하는 것은 복사의 대표적인 예시입니다. 숟가락과 철제 의자는 전도, 주전자는 대류입니다."
+        },
+        {
+            level: "hard",
+            q: "8. [심화] 온도가 서로 다른 두 물체가 접촉할 때 일어나는 '열평형' 현상에 대한 설명으로 옳지 않은 것은?",
+            a: ["열은 항상 온도가 높은 물체에서 온도가 낮은 물체로 이동한다.", "온도가 높은 물체는 열을 잃어 입자 운동이 처음보다 둔해진다.", "두 물체의 온도가 같아지면 열의 이동이 겉보기에 멈춘다.", "접촉한 지 오랜 시간이 지나면 찬물의 온도가 뜨거운 물의 처음 온도보다 높아진다."],
+            c: 3,
+            e: "열평형 상태에 도달하면 두 물체의 온도는 뜨거운 물의 처음 온도와 찬물의 처음 온도 사이의 어느 지점에서 같아지며, 찬물이 뜨거운 물의 처음 온도보다 높아질 수는 없습니다."
+        },
+        {
+            level: "hard",
+            q: "9. [심화] 뜨거운 물이 담긴 알루미늄 컵을 찬물이 담긴 열량계 속에 넣었을 때, 시간에 따른 두 물체의 온도 변화 그래프 모양으로 가장 적절한 예측은?",
+            a: ["뜨거운 물과 찬물의 온도 그래프가 평행하게 계속 유지된다.", "뜨거운 물의 온도는 내려가고 찬물의 온도는 올라가다가 결국 한 선으로 만난다.", "뜨거운 물의 온도는 계속 일정하고 찬물의 온도만 급격히 상승한다.", "두 물체 모두 실온인 0℃를 향해 수직 하강한다."],
+            c: 1,
+            e: "고온의 물체는 열을 잃어 온도가 내려가고, 저온의 물체는 열을 얻어 온도가 올라가다가 두 온도가 같아지는 '열평형 상태'에서 일정해집니다."
+        },
+        {
+            level: "hard",
+            q: "10. [심화] 에어컨(냉방기)은 주로 방의 위쪽에 설치하고, 전기난로(난방기)는 주로 방의 아래쪽에 설치하는 대류의 성질을 가장 정확하게 설명한 것은?",
+            a: ["차가운 공기는 밀도가 작아져 위로 뜨려고 하기 때문이다.", "따뜻한 공기는 밀도가 커져 아래로 가라앉으려고 하기 때문이다.", "차가운 공기는 아래로 내려오고, 따뜻한 공기는 위로 올라가므로 각각 높은 곳과 낮은 곳에 설치해야 방 전체 순환이 잘된다.", "공기의 순환 속도는 기계의 설치 높이와 전혀 무관하다."],
+            c: 2,
+            e: "기체는 온도가 높아지면 부피가 커져 밀도가 작아지므로 위로 올라가고, 차가워지면 밀도가 커져 아래로 내려옵니다. 이를 활용해야 효율적인 냉난방 순환(대류)이 일어납니다."
+        },
+        {
+            level: "hard",
+            q: "11. [심화] 겨울철 야외에 놓인 '철제 의자'와 '나무 의자'의 실제 온도는 같지만, 철제 의자에 앉았을 때 훨씬 더 차갑게 느껴지는 물리적인 원인은 무엇인가요?",
+            a: ["금속이 나무보다 실제 온도가 훨씬 낮기 때문이다.", "금속이 나무보다 우리 피부의 열을 빼앗아 전도하는 속도가 빠르기 때문이다.", "나무 의자가 주변의 복사열을 더 많이 차단하기 때문이다.", "금속 내부의 입자들은 온도가 낮아도 항상 나무보다 빠르게 움직이기 때문이다."],
+            c: 1,
+            e: "두 의자의 온도는 주변 공기와 열평형을 이루어 실제로는 같습니다. 그러나 철(금속)은 나무보다 열전도율이 매우 높아 우리 몸의 열을 아주 빠른 속도로 빼앗아가기 때문에 훨씬 차갑게 체감됩니다."
+        },
+        {
+            level: "hard",
+            q: "12. [심화] 요리용 온도계로 끓고 있는 기름의 온도를 측정할 때, 온도계를 넣자마자 바로 읽지 않고 잠시 기다렸다가 눈금을 읽어야 하는 이유를 '열평형'과 관련지어 올바르게 해석한 것은?",
+            a: ["기름이 온도계 주변에서 대류 현상을 완전히 멈출 때까지 기다려야 하므로", "온도계 내부 물질과 외부 기름의 온도가 같아지는 열평형 상태에 도달해야 정확한 온도가 측정되므로", "온도계가 기름의 복사열을 반사하는 데 시간이 필요하므로", "기름 입자의 운동이 온도계 때문에 순간적으로 둔해지기 때문"],
+            c: 1,
+            e: "온도계가 대상 물체와 접촉하여 열을 주고받은 후 온도가 같아지는 상태, 즉 '열평형'을 이루어야 비로소 그 물체의 진짜 온도를 나타낼 수 있기 때문입니다."
+        }
+    ];
+
+    let currentActiveQIdx = null; 
+    const solvedSet = new Set(); 
+
+    function renderQuizzes() {
+        const midContainer = document.getElementById('midQuizContainer');
+        const hardContainer = document.getElementById('hardQuizContainer');
+
+        quizData.forEach((item, idx) => {
+            const card = document.createElement('div');
+            card.className = `quiz-card q-card-${idx}`;
+            card.id = `quiz-card-${idx}`;
+
+            const badge = document.createElement('span');
+            badge.className = `badge ${item.level === 'mid' ? 'badge-mid' : 'badge-hard'}`;
+            badge.innerText = item.level === 'mid' ? '중간 수준' : '심화 수준';
+            card.appendChild(badge);
+
+            const qTitle = document.createElement('h3');
+            qTitle.innerText = item.q;
+            card.appendChild(qTitle);
+
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'options-container';
+
+            item.a.forEach((opt, oIdx) => {
+                const label = document.createElement('label');
+                label.className = `option-label label-${idx}-${oIdx}`;
+                // 아래 부분의 이스케이프(\)를 완전히 제거하여 정상 작동하도록 수정했습니다.
+                label.innerHTML = `<input type="radio" name="question-${idx}" value="${oIdx}" onclick="handleSelection(${idx}, ${oIdx})"> ${opt}`;
+                optionsDiv.appendChild(label);
+            });
+
+            card.appendChild(optionsDiv);
+
+            if (item.level === 'mid') {
+                midContainer.appendChild(card);
+            } else {
+                hardContainer.appendChild(card);
+            }
+        });
+    }
+
+    function handleSelection(qIdx, selectedIdx) {
+        currentActiveQIdx = qIdx;
+        const quiz = quizData[qIdx];
+        const isCorrect = (selectedIdx === quiz.c);
+
+        const overlay = document.getElementById('feedbackModal');
+        const icon = document.getElementById('modalIcon');
+        const title = document.getElementById('modalTitle');
+        const body = document.getElementById('modalBody');
+        const btn = document.getElementById('modalBtn');
+
+        if (isCorrect) {
+            icon.innerText = "🎉";
+            title.innerText = "정답입니다! 훌륭해요!";
+            title.style.color = "var(--success)";
+            body.innerHTML = `<strong>💡 핵심 과학 원리:</strong><br>${quiz.e}`;
+            btn.innerText = "다음 문제 보기";
+            btn.className = "modal-btn btn-success";
+            
+            solvedSet.add(qIdx);
+            document.getElementById(`quiz-card-${qIdx}`).classList.add('solved-correct');
+            
+            const inputs = document.getElementsByName(`question-${qIdx}`);
+            inputs.forEach(input => input.disabled = true);
+        } else {
+            icon.innerText = "❌";
+            title.innerText = "아쉽게도 틀렸습니다!";
+            title.style.color = "var(--danger)";
+            body.innerHTML = "교과서 개념을 다시 상상해 보세요.<br>입자의 운동이나 열의 이동 방향이 올바른지 점검해 봅시다!";
+            btn.innerText = "다시 도전하기 🔄";
+            btn.className = "modal-btn btn-danger";
+
+            const selectedRadio = document.querySelector(`input[name="question-${qIdx}"]:checked`);
+            if (selectedRadio) selectedRadio.checked = false;
+        }
+
+        document.getElementById('solvedCount').innerText = solvedSet.size;
+        overlay.style.display = "flex";
+    }
+
+    function closeModal() {
+        document.getElementById('feedbackModal').style.display = "none";
+    }
+
+    window.onload = function() {
+        renderQuizzes();
+    };
+</script>
+
+</body>
+</html>
